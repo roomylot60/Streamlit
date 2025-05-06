@@ -30,32 +30,58 @@ with body:
     
     # Chat Container
     with col1:
-        st.subheader("Chat")
-        ChatContainer = st.container()
+        st.subheader("채팅")
         
-        # Initialize chat history in session state if it doesn't exist
         if 'chat_history' not in st.session_state:
             st.session_state.chat_history = []
+            st.session_state.initial_input = True
         
-        # Display chat history
-        with ChatContainer:
-            for message in st.session_state.chat_history:
-                if message["role"] == "user":
-                    st.markdown(f"<div style='text-align: right; margin: 10px;'><div style='background-color: #e3f2fd; padding: 10px; border-radius: 10px; display: inline-block;'>{message['content']}</div></div>", unsafe_allow_html=True)
-                else:
-                    st.markdown(f"<div style='text-align: left; margin: 10px;'><div style='background-color: #f5f5f5; padding: 10px; border-radius: 10px; display: inline-block;'>{message['content']}</div></div>", unsafe_allow_html=True)
-        
-        # Chat input
-        user_input = st.text_input("Type your message:", key="chat_input")
-        if user_input:
-            # Add user message to chat history
-            st.session_state.chat_history.append({"role": "user", "content": user_input})
-            # Add bot response (you can modify this part to get actual bot responses)
-            st.session_state.chat_history.append({"role": "bot", "content": f"Echo: {user_input}"})
-            # Clear the input
-            st.session_state.chat_input = ""
-            # Rerun to update the chat display
-            st.experimental_rerun()
+        if st.session_state.initial_input:
+            st.subheader("대화 전문 입력")
+            conversation_text = st.text_area("대화를 한 줄씩 입력하세요:", height=200)
+            if st.button("대화 시작"):
+                if conversation_text:
+                    st.session_state.chat_history = []
+                    lines = conversation_text.strip().split('\n')
+                    current_speaker = "user1"
+                    for line in lines:
+                        if line.strip():
+                            st.session_state.chat_history.append({
+                                "role": current_speaker,
+                                "content": line.strip()
+                            })
+                            current_speaker = "user2" if current_speaker == "user1" else "user1"
+                    st.session_state.initial_input = False
+                    st.rerun()
+        else:
+            # 채팅창 컨테이너 (다크모드 지원)
+            chat_container = st.container()
+            with chat_container:
+                chat_html = "<div style='height: 400px; overflow-y: auto; border: 1px solid #444; border-radius: 5px; padding: 10px; background-color: #18191a;'>"
+                for message in st.session_state.chat_history:
+                    if message["role"] == "user1":
+                        chat_html += f"<div style='text-align: right; margin: 10px;'><div style='background-color: #263a53; color: #fff; padding: 10px; border-radius: 10px; display: inline-block;'>{message['content']}</div></div>"
+                    else:
+                        chat_html += f"<div style='text-align: left; margin: 10px;'><div style='background-color: #333; color: #fff; padding: 10px; border-radius: 10px; display: inline-block;'>{message['content']}</div></div>"
+                chat_html += "</div>"
+                st.markdown(chat_html, unsafe_allow_html=True)
+            
+            # 입력창, 화자 선택, 전송 버튼 한 줄 배치
+            st.subheader("새 메시지 입력")
+            chat_col1, chat_col2, chat_col3 = st.columns([1, 4, 1])
+            with chat_col1:
+                speaker = st.selectbox("화자 선택", ["화자1", "화자2"], label_visibility="collapsed")
+            with chat_col2:
+                new_message = st.text_input("메시지 입력", label_visibility="collapsed")
+            with chat_col3:
+                if st.button("전송"):
+                    if new_message:
+                        role = "user1" if speaker == "화자1" else "user2"
+                        st.session_state.chat_history.append({
+                            "role": role,
+                            "content": new_message
+                        })
+                        st.rerun()
     
     # Second column with nested container and columns
     with col2:
