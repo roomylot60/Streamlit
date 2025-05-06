@@ -72,15 +72,18 @@ with body:
             with chat_col1:
                 speaker = st.selectbox("화자 선택", ["화자1", "화자2"], label_visibility="collapsed")
             with chat_col2:
-                new_message = st.text_input("메시지 입력", label_visibility="collapsed")
+                if "new_message" not in st.session_state:
+                    st.session_state.new_message = ""
+                new_message = st.text_input("메시지 입력", value=st.session_state.new_message, key="new_message", label_visibility="collapsed")
             with chat_col3:
                 if st.button("전송"):
-                    if new_message:
+                    if st.session_state.new_message:
                         role = "user1" if speaker == "화자1" else "user2"
                         st.session_state.chat_history.append({
                             "role": role,
-                            "content": new_message
+                            "content": st.session_state.new_message
                         })
+                        st.session_state.new_message = ""  # 입력창 비우기
                         st.rerun()
     
     # Second column with nested container and columns
