@@ -1,9 +1,19 @@
 import streamlit as st
+import logging
+
+# 로깅 설정
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    filename='logs/streamlit_app.log'
+)
+
+logger = logging.getLogger('streamlit_app')
 
 st.set_page_config(layout="wide")
 
 # Load external CSS
-with open('assets/css/style.css') as f:
+with open('assets/css/style.css', encoding='utf-8') as f:
     st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
 # Sidebar
@@ -48,14 +58,14 @@ with body:
         # Chat input
         user_input = st.text_input("Type your message:", key="chat_input")
         if user_input:
+            logger.info(f'사용자 입력: {user_input}')
             # Add user message to chat history
             st.session_state.chat_history.append({"role": "user", "content": user_input})
             # Add bot response (you can modify this part to get actual bot responses)
             st.session_state.chat_history.append({"role": "bot", "content": f"Echo: {user_input}"})
+            logger.info('채팅 히스토리가 업데이트되었습니다')
             # Clear the input
             st.session_state.chat_input = ""
-            # Rerun to update the chat display
-            st.experimental_rerun()
     
     # Second column with nested container and columns
     with col2:
