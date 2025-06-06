@@ -357,3 +357,5 @@ Traceback (most recent call last):
 tornado.websocket.WebSocketClosedError
 2025-04-27 21:18:01,390 - streamlit_app - INFO - 사용자 입력: 안녕
 2025-04-27 21:18:01,390 - streamlit_app - INFO - 채팅 히스토리가 업데이트되었습니다
+2025-06-06 21:06:38,940 - numexpr.utils - INFO - Note: NumExpr detected 16 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
+2025-06-06 21:06:38,940 - numexpr.utils - INFO - NumExpr defaulting to 8 threads.
